@@ -121,7 +121,6 @@ function setMessage(string){
 }
 
 function setUpOptions(){
-	
 	chrome.storage.sync.get("urls", function (url_array) {
 		url_array = url_array.urls;
 		console.log("urls:"+JSON.stringify(url_array));
