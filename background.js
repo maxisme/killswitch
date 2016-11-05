@@ -5,21 +5,19 @@ function updateLocalStorage(){
 		chrome.storage.local.get("allowed_ips", function(allowed_ips_array) {
 			localStorage.urls = url_array.urls;
 			localStorage.allowed_ips = allowed_ips_array.allowed_ips;
-			alert("updating local with "+localStorage.urls);
-			alert("updating local with "+localStorage.allowed_ips);
 		});
 	});
 }
 updateLocalStorage();
 
 function matchingDomainRegex(url, url_regex){
-	alert(url+" vs "+ url_regex);
-	if(url.includes(url_regex)){
-		alert(url_regex);
-		return true;
-	}else{
-		return false;
+	var matching = false;
+	if(url.length > 0 && url_regex.length > 0){
+		if(url.includes(url_regex)){
+			matching = true;
+		}
 	}
+	return matching;
 }
 //----RECEIVE MESSAGES FROM UI 
 chrome.runtime.onMessage.addListener(
@@ -50,7 +48,6 @@ var validateIP = function(details) {
 		if (request.status === 200) {
 			var user_ip = request.responseText;
 			for (var x = 0; x < stored_ips.length; x++) {
-				alert(stored_ips[x]);
 				if(user_ip === stored_ips[x]){
 					return {cancel: false};
 				}

@@ -10,11 +10,12 @@ document.getElementById("edit").addEventListener("click", function(){
 		console.log("domain: "+domain_regex+" ip: "+ip);
 		storeWhitelist(domain_regex,ip);
 	}
+	window.location.reload();
 }, false);
 
 document.getElementById("add").addEventListener("click", function(){
 	var html = document.getElementById("content").innerHTML;
-	html += 'Domain:<br><input class="domain_regex" value=""/><br>Allowed IPs (comma seperated):<br><textarea class="ips" style="width:100%"></textarea><br><hr>';
+	html += '<p>Domain:<br><input class="domain_regex" value=""/><br>Allowed IPs (comma seperated):<br><textarea class="ips" style="width:100%"></textarea><br><hr></p>';
 	document.getElementById("content").innerHTML = html;
 });
 
@@ -108,6 +109,7 @@ function deleteWhitelist(domain_string){
 			chrome.storage.local.set({'urls': url_array}, function(){
 				updateBackground();
 			});
+			
 			setMessage("Succesfully deleted");
 		});
 	});
@@ -139,7 +141,7 @@ function setUpOptions(){
 				for(var x=0; x < allowed_ips_array.length; x++){
 					var url = url_array[x];
 					var ips = allowed_ips_array[x];
-					html += 'Domain <a href="#" url="'+url+'" class="delete">X</a>:<br><input class="domain_regex" value="'+url+'"/disabled><br>Allowed IPs (comma seperated):<br><textarea class="ips" style="width:100%">'+ips+'</textarea><br><hr>';
+					html += '<p>Domain <a href="#" url="'+url+'" class="delete">X</a>:<br><input class="domain_regex" value="'+url+'"/disabled><br>Allowed IPs (comma seperated):<br><textarea class="ips" style="width:100%">'+ips+'</textarea><br><hr></p>';
 				}
 				document.getElementById("content").innerHTML = html;
 
@@ -148,6 +150,7 @@ function setUpOptions(){
 				var deleteFunction = function() {
 					var url = this.getAttribute("url");
 					deleteWhitelist(url);
+					window.location.reload();
 				};
 				for (var i = 0; i < deleteClasses.length; i++) {
 					deleteClasses[i].addEventListener('click', deleteFunction, false);
