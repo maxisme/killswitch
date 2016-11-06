@@ -1,24 +1,5 @@
 "use strict";
 
-document.getElementById("edit").addEventListener("click", function(){
-	console.log("clicked");
-	var domain_regexs = document.getElementsByClassName("domain_regex");
-	var ips = document.getElementsByClassName("ips");
-	for (var i=0;i<domain_regexs.length;i++){
-		var domain_regex = domain_regexs[i].value;
-		var ip = ips[i].value;
-		console.log("domain: "+domain_regex+" ip: "+ip);
-		storeWhitelist(domain_regex,ip);
-	}
-	window.location.reload();
-}, false);
-
-document.getElementById("add").addEventListener("click", function(){
-	var html = document.getElementById("content").innerHTML;
-	html += '<p>Domain:<br><input class="domain_regex" value=""/><br>Allowed IPs (comma seperated):<br><textarea class="ips" style="width:100%"></textarea><br><hr></p>';
-	document.getElementById("content").innerHTML = html;
-});
-
 function updateBackground(){
 	chrome.runtime.sendMessage({type: "update"}, function(response) {
 	  return true;
@@ -34,7 +15,6 @@ function storeWhitelist(domain_string, ips){
 	for (var i = 0; i < ip_array.length; i++){
 		var ip = ip_array[i];
 		if(!isIP(ip)){
-			setMessage("Invalid Ip: "+ ip);
 			validInput = false;
 		}
 	}
@@ -84,7 +64,6 @@ function storeWhitelist(domain_string, ips){
 			
 				chrome.storage.local.set({'allowed_ips': allowed_ips_array}, function(){
 					updateBackground();
-					setMessage("Success!");
 				});
 			});
 		});
@@ -103,14 +82,11 @@ function deleteWhitelist(domain_string){
 					break;
 				}
 			}
-			chrome.storage.local.set({'allowed_ips': allowed_ips_array}, function(){
-				updateBackground();
-			});
 			chrome.storage.local.set({'urls': url_array}, function(){
-				updateBackground();
+				chrome.storage.local.set({'allowed_ips': allowed_ips_array}, function(){
+					updateBackground();
+				});
 			});
-			
-			setMessage("Succesfully deleted");
 		});
 	});
 }
@@ -123,42 +99,11 @@ function isIP(ipaddress)
   }else{
 	  return false;
   }
-}  
-
-function setMessage(string){
-	document.getElementById("message").innerHTML = string;
 }
 
-function setUpOptions(){
-	//chrome.storage.local.clear(function() {});
-	chrome.storage.local.get("urls", function (url_array) {
-		url_array = url_array.urls;
-		console.log("urls:"+JSON.stringify(url_array));
-		chrome.storage.local.get("allowed_ips", function(allowed_ips_array) {
-				allowed_ips_array = allowed_ips_array.allowed_ips;
-				console.log("allowed_ips_array:"+JSON.stringify(allowed_ips_array));
-				var html = "";
-				for(var x=0; x < allowed_ips_array.length; x++){
-					var url = url_array[x];
-					var ips = allowed_ips_array[x];
-					html += '<p>Domain <a href="#" url="'+url+'" class="delete">X</a>:<br><input class="domain_regex" value="'+url+'"/disabled><br>Allowed IPs (comma seperated):<br><textarea class="ips" style="width:100%">'+ips+'</textarea><br><hr></p>';
-				}
-				document.getElementById("content").innerHTML = html;
-
-				//set event delete listeners
-				var deleteClasses = document.getElementsByClassName("delete");
-				var deleteFunction = function() {
-					var url = this.getAttribute("url");
-					deleteWhitelist(url);
-					window.location.reload();
-				};
-				for (var i = 0; i < deleteClasses.length; i++) {
-					deleteClasses[i].addEventListener('click', deleteFunction, false);
-				}
-		});
-	});
+function getHostFromURL(url)
+{
+    var a = document.createElement('a');
+    a.href = url;
+    return a.hostname;
 }
-
-window.onload = function(){
-	setUpOptions();
-};

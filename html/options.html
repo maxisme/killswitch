@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+  	<link href="https://fonts.googleapis.com/css?family=Rokkitt" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="../css/options.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
@@ -11,16 +12,18 @@
   	<hr>
     <hr>
         <div id="content">
-            Domain:<br>
+            DOMAIN:<br>
             <input class="domain_regex" value=""/><br>
-            Allowed IPs (comma seperated):<br>
+            ALLOWED IPS (comma seperated):<br>
             <textarea class="ips" style="width:100%"></textarea><br>
     		<hr>
         </div>
     <hr>
     <div align="center">
-		<a id="add" href="#">ADD</a> <a id="edit" href="#">SAVE</a>
+		<a id="add" href="#">ADD NEW RULE</a><br>
+		<a id="save" href="#">SAVE RULES</a>
     </div>
     <script type="text/javascript" src="../js/settings.js"></script>
+    <script type="text/javascript" src="../js/options.js"></script>
   </body>
 </html>

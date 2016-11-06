@@ -5,6 +5,7 @@ function updateLocalStorage(){
 		chrome.storage.local.get("allowed_ips", function(allowed_ips_array) {
 			localStorage.urls = url_array.urls;
 			localStorage.allowed_ips = allowed_ips_array.allowed_ips;
+			alert("updated");
 		});
 	});
 }

@@ -1,0 +1,17 @@
+*{
+	font-family: 'Rokkitt', serif;
+	background-color:#E17375;
+	color:#F4F4F4;
+}
+input{
+	border:#FFFFFF thin solid;
+}
+a{
+	text-decoration:none;
+	color:#F4F4F4;
+}
+
+a:hover{
+	text-decoration:none;
+	color:#CCCCCC;
+}
