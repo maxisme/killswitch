@@ -1,17 +1,24 @@
 *{
-	font-family: 'Rokkitt', serif;
-	background-color:#E17375;
-	color:#F4F4F4;
+	font-family: 'Dosis', sans-serif;
+	color:#515151;
 }
-input{
-	border:#FFFFFF thin solid;
+
+.delete{
+	color:#bc2122;
 }
+textarea, .domain_regex{
+	width: 100%;
+	border:1px solid #515151;
+}
+
 a{
+	padding:3px;
+	border:1px solid #fff;
 	text-decoration:none;
-	color:#F4F4F4;
+	color:#CCCCCC;
 }
 
 a:hover{
 	text-decoration:none;
-	color:#CCCCCC;
+	color:#F4F4F4;
 }

@@ -14,8 +14,14 @@ function storeWhitelist(domain_string, ips){
 	var ip_array = ips.split(",");
 	for (var i = 0; i < ip_array.length; i++){
 		var ip = ip_array[i];
-		if(!isIP(ip)){
-			validInput = false;
+		if(ip.charAt(0) == "!"){
+			if(!isIP(ip.substring(1,ip.length))){
+				validInput = false;
+			}
+		}else{
+			if(!isIP(ip)){
+				validInput = false;
+			}
 		}
 	}
 	
@@ -64,6 +70,7 @@ function storeWhitelist(domain_string, ips){
 			
 				chrome.storage.local.set({'allowed_ips': allowed_ips_array}, function(){
 					updateBackground();
+					setUpOptions();
 				});
 			});
 		});

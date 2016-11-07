@@ -16,9 +16,8 @@ document.getElementById("save").addEventListener("click", function(){
 }, false);
 
 document.getElementById("add").addEventListener("click", function(){
-	saveOptions();
 	var html = document.getElementById("content").innerHTML;
-	html += '<p>DOMAIN:<br><input class="domain_regex" value=""/><br>ALLOWED IPS (comma seperated):<br><textarea class="ips" style="width:100%"></textarea><br><hr></p>';
+	html += '<p><strong>URL</strong><br><input class="domain_regex" value=""/><br><strong>ALLOWED IPS</strong> seperate with comma<br><textarea class="ips" style="width:100%"></textarea><br></p>';
 	document.getElementById("content").innerHTML = html;
 });
 
@@ -38,7 +37,7 @@ function setUpOptions(){
 				for(var x=0; x < allowed_ips_array.length; x++){
 					var url = url_array[x];
 					var ips = allowed_ips_array[x];
-					html += '<p>DOMAIN (<a href="#" url="'+url+'" class="delete">REMOVE RULE</a>):<br><input class="domain_regex" value="'+url+'"/disabled><br>ALLOWED IPS (comma seperated):<br><textarea class="ips" style="width:100%">'+ips+'</textarea><br><hr></p>';
+					html += '<p><strong>URL</strong> - <a href="#" url="'+url+'" class="delete">REMOVE RULE</a><br><input class="domain_regex" value="'+url+'"/disabled><br><strong>ALLOWED IPS</strong> seperate with comma<br><textarea class="ips" style="width:100%">'+ips+'</textarea><br></p>';
 				}
 				document.getElementById("content").innerHTML = html;
 
@@ -47,6 +46,7 @@ function setUpOptions(){
 				var deleteFunction = function() {
 					var url = this.getAttribute("url");
 					deleteWhitelist(url);
+					this.parentNode.innerHTML = "";
 				};
 				for (var i = 0; i < deleteClasses.length; i++) {
 					deleteClasses[i].addEventListener('click', deleteFunction, false);
