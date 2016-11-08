@@ -55,7 +55,7 @@ function setIconColor(this_tab_id){
 		for(var x = 0; x < red_icon_tab_ids.length; x++){
 			if(red_icon_tab_ids[x] === this_tab_id){
 				alert("make red");
-				chrome.browserAction.setIcon ( { path: '/img/48x48red.png' } );
+				chrome.browserAction.setIcon ( { path: '/img/icon-48x48-red.png' } );
 			}
 		}
 	}
@@ -65,7 +65,7 @@ function setIconColor(this_tab_id){
 		for(var y = 0; y < green_icon_tab_ids.length; y++){
 			if(green_icon_tab_ids[x] === this_tab_id){
 				alert("make green");
-				chrome.browserAction.setIcon ( { path: '/img/48x48green.png' } );
+				chrome.browserAction.setIcon ( { path: '/img/icon-48x48-green.png' } );
 			}
 		}
 	}
@@ -149,12 +149,12 @@ var validateIP = function(details) {
 	var this_tab_id = localStorage.current_tab_id;
 	
 	if(shouldBlock){
-		chrome.browserAction.setIcon ( { path: '/img/48x48red.png' } );
+		chrome.browserAction.setIcon ( { path: '/img/icon-48x48-red.png' } );
 	}else{
 		if(isDomain){
-			chrome.browserAction.setIcon ( { path: '/img/48x48green.png' } );
+			chrome.browserAction.setIcon ( { path: '/img/icon-48x48-green.png' } );
 		}else{
-			chrome.browserAction.setIcon ( { path: '/img/48x48.png' } );
+			chrome.browserAction.setIcon ( { path: '/img/icon-48x48-grey.png' } );
 		}
 	}
 	return {cancel: shouldBlock}
