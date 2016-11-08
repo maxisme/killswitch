@@ -6,10 +6,11 @@ function updateBackground(){
 	});
 }
 
-function storeWhitelist(domain_string, ips){
+function storeWhitelist(domain_string, ips, manual){
 	console.log("input:"+domain_string);
 	var validInput = true;
 	
+	//valid ip entry
 	ips = ips.replace(/ /g,'');
 	var ip_array = ips.split(",");
 	for (var i = 0; i < ip_array.length; i++){
@@ -50,7 +51,6 @@ function storeWhitelist(domain_string, ips){
 				allowed_ips_array = allowed_ips_array.allowed_ips;
 				console.log("get:"+JSON.stringify(allowed_ips_array));
 				if(allowed_ips_array == null){
-					console.log("null allowed_ips_array");
 					allowed_ips_array = [];
 				}
 				
@@ -58,14 +58,25 @@ function storeWhitelist(domain_string, ips){
 					//store new url
 					url_array[url_array.length] = domain_string;
 					chrome.storage.local.set({'urls': url_array}, function(){
-						alert("stored"+url_array);
 						updateBackground();
 					});
 					url_pointer = x++;
 					allowed_ips_array[allowed_ips_array.length] = ips;
 				}else{
-					console.log("overwriting at "+url_pointer+" ips");
-					allowed_ips_array[url_pointer] = ips;
+					if(!manual){
+						var stored_ips = allowed_ips_array[url_pointer].split(",");
+						for (var x = 0; x < stored_ips.length; x++){
+							var input_ips = ips.split(",");
+							for (var y = 0; y < input_ips.length; y++){
+								if(stored_ips[x] === input_ips[y] || stored_ips[x] === "!"+input_ips[y]){
+									ips.replace(stored_ips[x], "");
+								}
+							}
+						}
+						allowed_ips_array[url_pointer] = allowed_ips_array[url_pointer]+","+ips;
+					}else{
+						allowed_ips_array[url_pointer] = ips;
+					}
 				}
 			
 				chrome.storage.local.set({'allowed_ips': allowed_ips_array}, function(){
@@ -108,9 +119,22 @@ function isIP(ipaddress)
   }
 }
 
-function getHostFromURL(url)
-{
+function getHostFromURL(url){
     var a = document.createElement('a');
     a.href = url;
-    return a.hostname;
+	if(url.indexOf(a.hostname) != -1){
+    	return a.hostname;
+	}else{
+		return null;
+	}
+}
+
+function validURL(str) {
+  var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+  '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|'+ // domain name
+  '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+  '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+  '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+  '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  return pattern.test(str);
 }

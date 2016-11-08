@@ -22,7 +22,7 @@
 		"open_in_tab": false
 	},
 	"browser_action": {
-		"default_icon": "/img/128x128g.png",
+		"default_icon": "/img/128x128grey.png",
 		"default_popup": "/html/popup.html",
 		"default_title": "KillVPN"
 	}

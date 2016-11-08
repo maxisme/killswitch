@@ -3,6 +3,10 @@
 	color:#515151;
 }
 
+h1{
+	color:#bc2122;
+}
+
 #content{
-	min-width:100%;
+	width:250px;
 }
