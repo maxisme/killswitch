@@ -7,7 +7,7 @@ function saveOptions(){
 		var domain_regex = domain_regexs[i].value;
 		var ip = ips[i].value;
 		console.log("domain: "+domain_regex+" ip: "+ip);
-		storeWhitelist(domain_regex,ip,true);
+		storeWhitelist(domain_regex, ip, true, function(){ setUpOptions();});
 	}
 }
 

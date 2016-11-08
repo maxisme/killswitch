@@ -14,9 +14,9 @@ function storeURL(domainOnly, whitelist){
 			var ip = request.responseText;
 			if(isIP){
 				if(whitelist){
-					storeWhitelist(url, ip, false);
+					storeWhitelist(url, ip, false, null);
 				}else{
-					storeWhitelist(url, "!"+ip, false);
+					storeWhitelist(url, "!"+ip, false, null);
 				}
 				
 				chrome.runtime.sendMessage({type: "refresh"}, function(response) {
@@ -30,6 +30,19 @@ function storeURL(domainOnly, whitelist){
 		}
 	});
 	//window.close();
+}
+
+function setUpPopup(){
+	var request = new XMLHttpRequest();
+	request.open('GET', 'https://api.ipify.org', false);
+	request.send(null);
+	if (request.status === 200) {
+		var ip = request.responseText;
+		var ipClasses = document.getElementsByClassName("ip");
+		for (var i = 0; i < ipClasses.length; i++) {
+			ipClasses[i].innerHTML = ip;
+		}
+	}
 }
 
 document.getElementById("wl_domain").addEventListener("click", function(){
@@ -47,3 +60,12 @@ document.getElementById("bl_domain").addEventListener("click", function(){
 document.getElementById("bl_url").addEventListener("click", function(){
 	storeURL(false, false);
 }, false);
+
+document.getElementById("rules").addEventListener("click", function(){
+	chrome.runtime.openOptionsPage();
+}, false);
+
+
+window.onload = function(){
+	setUpPopup();
+};

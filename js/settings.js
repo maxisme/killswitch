@@ -6,7 +6,7 @@ function updateBackground(){
 	});
 }
 
-function storeWhitelist(domain_string, ips, manual){
+function storeWhitelist(domain_string, ips, manual, callback){
 	console.log("input:"+domain_string);
 	var validInput = true;
 	
@@ -81,7 +81,7 @@ function storeWhitelist(domain_string, ips, manual){
 			
 				chrome.storage.local.set({'allowed_ips': allowed_ips_array}, function(){
 					updateBackground();
-					setUpOptions();
+					callback();
 				});
 			});
 		});

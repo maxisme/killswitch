@@ -10,3 +10,10 @@ h1{
 #content{
 	width:250px;
 }
+
+a{
+	text-decoration:none;
+}
+button{
+	width:200px;
+}

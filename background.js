@@ -138,7 +138,6 @@ var validateIP = function(details) {
 				if(not){
 					shouldBlock = !shouldBlock;
 				}
-				
 			}
 		}else{
 			alert("BLOCKED: The tool used to get your public ip address is down");
