@@ -29,20 +29,24 @@ function storeURL(domainOnly, whitelist){
 			alert("BLOCKED: The tool used to get your public ip address is down");
 		}
 	});
-	//window.close();
+	window.close();
 }
 
 function setUpPopup(){
-	var request = new XMLHttpRequest();
-	request.open('GET', 'https://api.ipify.org', false);
-	request.send(null);
-	if (request.status === 200) {
-		var ip = request.responseText;
-		var ipClasses = document.getElementsByClassName("ip");
-		for (var i = 0; i < ipClasses.length; i++) {
-			ipClasses[i].innerHTML = ip;
+	var xmlhttp=new XMLHttpRequest();
+	xmlhttp.onreadystatechange=function()
+	{
+		if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{
+			var ip = xmlhttp.responseText;
+			var ipClasses = document.getElementsByClassName("ip");
+			for (var i = 0; i < ipClasses.length; i++) {
+				ipClasses[i].innerHTML = ip;
+			}
 		}
 	}
+	xmlhttp.open("GET", 'https://api.ipify.org', false);
+	xmlhttp.send();
 }
 
 document.getElementById("wl_domain").addEventListener("click", function(){

@@ -63,25 +63,32 @@ function storeWhitelist(domain_string, ips, manual, callback){
 					url_pointer = x++;
 					allowed_ips_array[allowed_ips_array.length] = ips;
 				}else{
+					var previousIPs = allowed_ips_array[url_pointer];
 					if(!manual){
 						var stored_ips = allowed_ips_array[url_pointer].split(",");
-						for (var x = 0; x < stored_ips.length; x++){
+						//check if ip already exists
+						for (var q = 0; q < stored_ips.length; q++){
 							var input_ips = ips.split(",");
 							for (var y = 0; y < input_ips.length; y++){
-								if(stored_ips[x] === input_ips[y] || stored_ips[x] === "!"+input_ips[y]){
-									ips.replace(stored_ips[x], "");
+								console.log("q: "+stored_ips[q]+" y: "+input_ips[y]);
+								if(input_ips[y].indexOf(stored_ips[q]) != -1){
+									previousIPs = previousIPs.replace(stored_ips[q], "");
 								}
 							}
 						}
-						allowed_ips_array[url_pointer] = allowed_ips_array[url_pointer]+","+ips;
-					}else{
-						allowed_ips_array[url_pointer] = ips;
+						ips = previousIPs+","+ips;
+						//remove excess commas
+						ips = ips.replace(/\,{2,}/g,"");
 					}
+					
+					allowed_ips_array[url_pointer] = ips;
 				}
 			
 				chrome.storage.local.set({'allowed_ips': allowed_ips_array}, function(){
 					updateBackground();
-					callback();
+					if(callback != null){
+						callback();
+					}
 				});
 			});
 		});

@@ -10,6 +10,10 @@
 		"scripts": ["background.js"],
 		"persistent": true
 	},
+	"icons": {
+		"48": "/img/icon-48x48-red.png",
+		"128": "/img/icon-128x128-red.png"
+	 },
 	"permissions": [
 	   "webRequest",
 	   "webRequestBlocking",

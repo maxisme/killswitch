@@ -20,6 +20,18 @@ function getHostFromURL(url){
 	}
 }
 
+
+function setColor(tabID){
+	var LS = localStorage['tabColors'+tabID];
+	if(LS === "red"){
+		chrome.browserAction.setIcon ( { path: '/img/icon-48x48-red.png' } );
+	}else if(LS === "green"){
+		chrome.browserAction.setIcon ( { path: '/img/icon-48x48-green.png' } );
+	}else{
+		chrome.browserAction.setIcon ( { path: '/img/icon-48x48-grey.png' } );
+	}
+}
+
 function matchingDomainRegex(access_url, url_regex){
 	var matching = false;
 	if(access_url.length > 0 && url_regex.length > 0){
@@ -148,20 +160,21 @@ var validateIP = function(details) {
 	var this_tab_id = localStorage.current_tab_id;
 	
 	if(shouldBlock){
-		chrome.browserAction.setIcon ( { path: '/img/icon-48x48-red.png' } );
+		localStorage.setItem('tabColors'+this_tab_id, "red");
 	}else{
 		if(isDomain){
-			chrome.browserAction.setIcon ( { path: '/img/icon-48x48-green.png' } );
+			localStorage.setItem('tabColors'+this_tab_id, "green");
 		}else{
-			chrome.browserAction.setIcon ( { path: '/img/icon-48x48-grey.png' } );
+			localStorage.setItem('tabColors'+this_tab_id, "grey");
 		}
 	}
+	setColor(this_tab_id);
 	return {cancel: shouldBlock}
 };
 
 chrome.tabs.onActivated.addListener(function(info){
 	localStorage.current_tab_id = info.tabId;
-	setIconColor(info.tabId);
+	setColor(info.tabId);
 });
 
 chrome.webRequest.onBeforeSendHeaders.addListener(
