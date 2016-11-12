@@ -90,15 +90,21 @@ chrome.runtime.onMessage.addListener(
 
 var validateIP = function(details) {
 	var access_url = details.url;
-	var stored_urls = localStorage.urls.split(",");
-	var stored_ips = localStorage.allowed_ips.split(",");
+	var stored_urls = localStorage.urls;
+	var stored_ips = localStorage.allowed_ips;
 	
 	var shouldBlock = false;
 	var isDomain = false;
+	var domainIndex = -1;
 	
 	//check if access_url is one stored 
 	for (var i = 0; i < stored_urls.length; i++) {
 		isDomain = matchingDomainRegex(access_url, stored_urls[i]);
+		if(isDomain){
+			alert(stored_urls[i]);
+			domainIndex = i;
+			break;
+		}
 	}
 	
 	if(isDomain){
@@ -111,8 +117,10 @@ var validateIP = function(details) {
 				alert("The tool used to get your public ip address did not return a valid IP address!\n\nValue returned: "+ user_ip+"\n\nPlease email max@maxis.me with the value returned. So sorry for the inconvenience!");
 				shouldBlock = true;
 			}
+			
 			for (var x = 0; x < stored_ips.length; x++) {
 				var ip = stored_ips[x];
+				alert("ip->"+ip);
 				var not = false;
 				if(ip.charAt(0) === "!"){
 					ip = ip.substring(1, ip.length);

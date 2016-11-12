@@ -1,18 +1,24 @@
 "use strict";
 
-function saveOptions(){
+function saveOptions(i){
 	var domain_regexs = document.getElementsByClassName("domain_regex");
 	var ips = document.getElementsByClassName("ips");
-	for (var i=0;i<domain_regexs.length;i++){
-		var domain_regex = domain_regexs[i].value;
-		var ip = ips[i].value;
-		console.log("domain: "+domain_regex+" ip: "+ip);
-		storeWhitelist(domain_regex, ip, true, function(){ setUpOptions();});
-	}
+	
+	var domain_regex = domain_regexs[i].value;
+	var ip = ips[i].value;
+	console.log("domain: "+domain_regex+" ip: "+ip);
+	storeWhitelist(domain_regex, ip, true, function(){ 
+		i++;
+		if(i < domain_regexs.length){
+			saveOptions(i);
+		}else{
+			setUpOptions();
+		}
+	});
 }
 
 document.getElementById("save").addEventListener("click", function(){
-	saveOptions();
+	saveOptions(0);
 }, false);
 
 document.getElementById("add").addEventListener("click", function(){

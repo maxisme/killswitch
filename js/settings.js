@@ -61,29 +61,36 @@ function storeWhitelist(domain_string, ips, manual, callback){
 						updateBackground();
 					});
 					url_pointer = x++;
-					allowed_ips_array[allowed_ips_array.length] = ips;
-				}else{
-					if(!manual){
-						var stored_ips = allowed_ips_array[url_pointer].split(",");
-						var input_ips = ips.split(",");
-						
-						//prevent duplicate ip addresses or alternative ones
-						for (var q = 0; q < stored_ips.length; q++){
-							for (var y = 0; y < input_ips.length; y++){
-								var i = input_ips[y];
-								var s = stored_ips[q];
-								//i == "!"+s - i is negative version of already stored ip
-								//"!"+i == s - i is non negative version of already stored ip
-								if(i == s || i == "!"+s || "!"+i == s){
-									stored_ips.splice(stored_ips.indexOf(s), 1);
-								}
+				}
+				
+				if(!manual){
+					console.log("not manual");
+					var stored_ips = allowed_ips_array[url_pointer].split(",");
+					var input_ips = ips.split(",");
+					
+					//prevent duplicate ip addresses or alternative ones
+					for (var q = 0; q < stored_ips.length; q++){
+						for (var y = 0; y < input_ips.length; y++){
+							var i = input_ips[y];
+							var s = stored_ips[q];
+							//i == "!"+s - i is negative version of already stored ip
+							//"!"+i == s - i is non negative version of already stored ip
+							if(i == s || i == "!"+s || "!"+i == s){
+								stored_ips.splice(stored_ips.indexOf(s), 1);
 							}
 						}
-						ips = stored_ips.concat(input_ips).toString();
 					}
-					
+					ips = stored_ips.concat(input_ips);
+				}else{
+					console.log("manual:"+ips+" pnt "+url_pointer);
+				}
+				
+				if(!already_url){
+					allowed_ips_array[allowed_ips_array.length] = ips;
+				}else{
 					allowed_ips_array[url_pointer] = ips;
 				}
+				console.log("final:"+allowed_ips_array);
 			
 				chrome.storage.local.set({'allowed_ips': allowed_ips_array}, function(){
 					updateBackground();

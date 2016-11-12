@@ -19,9 +19,10 @@ function storeURL(domainOnly, whitelist){
 					storeWhitelist(url, "!"+ip, false, null);
 				}
 				
+				/*
 				chrome.runtime.sendMessage({type: "refresh"}, function(response) {
 				  return true;
-				});
+				});*/
 			}else{
 				alert("The tool used to get your public ip address did not return a valid IP address!\n\nValue returned: "+ ip+"\n\nPlease email max@maxis.me with the value returned. So sorry for the inconvenience!");
 			}
@@ -29,7 +30,7 @@ function storeURL(domainOnly, whitelist){
 			alert("BLOCKED: The tool used to get your public ip address is down");
 		}
 	});
-	window.close();
+	//window.close();
 }
 
 function setUpPopup(){
