@@ -35,52 +35,34 @@ function setColor(tabID){
 function matchingDomainRegex(access_url, url_regex){
 	var matching = false;
 	if(access_url.length > 0 && url_regex.length > 0){
-		if(getHostFromURL("https://"+url_regex) === url_regex){ //checking host
+		if(url_regex.indexOf("http") === -1 && getHostFromURL("https://"+url_regex) === url_regex){ 
+			/*checking host*/
 			url_regex = url_regex.replace(".","\\.");
 			url_regex = new RegExp("(http(s?))\:\/\/"+url_regex+"/.*","gi");
 			//blocking host
 			if(url_regex.test(access_url)){
+				alert("is host ->"+ access_url);
 				matching = true;
 			}
 		}else{
+			/*checking url / url-regex */
 			if(url_regex.indexOf("*") > -1){
 				url_regex = url_regex.replace(/\*/g, '.*');
 				url_regex = new RegExp(url_regex, "gi");
 				if(url_regex.test(access_url)){
+					alert("is regex ->"+ access_url);
 					matching = true;
 				}
 			}else{
 				//blocking url
 				if(access_url === url_regex){
+					alert("is url ->"+ access_url);
 					matching = true;
 				}
 			}
 		}
 	}
 	return matching;
-}
-
-/* not used */
-function setIconColor(this_tab_id){
-	var red_icon_tab_ids = localStorage.getItem("red_tabs");
-	if(red_icon_tab_ids){
-		for(var x = 0; x < red_icon_tab_ids.length; x++){
-			if(red_icon_tab_ids[x] === this_tab_id){
-				alert("make red");
-				chrome.browserAction.setIcon ( { path: '/img/icon-48x48-red.png' } );
-			}
-		}
-	}
-	
-	var green_icon_tab_ids = localStorage.getItem("green_tabs");
-	if(green_icon_tab_ids){
-		for(var y = 0; y < green_icon_tab_ids.length; y++){
-			if(green_icon_tab_ids[x] === this_tab_id){
-				alert("make green");
-				chrome.browserAction.setIcon ( { path: '/img/icon-48x48-green.png' } );
-			}
-		}
-	}
 }
 
 function isIP(ipaddress)   
@@ -117,9 +99,6 @@ var validateIP = function(details) {
 	//check if access_url is one stored 
 	for (var i = 0; i < stored_urls.length; i++) {
 		isDomain = matchingDomainRegex(access_url, stored_urls[i]);
-		if(isDomain){
-			break;
-		}
 	}
 	
 	if(isDomain){
@@ -132,7 +111,6 @@ var validateIP = function(details) {
 				alert("The tool used to get your public ip address did not return a valid IP address!\n\nValue returned: "+ user_ip+"\n\nPlease email max@maxis.me with the value returned. So sorry for the inconvenience!");
 				shouldBlock = true;
 			}
-			
 			for (var x = 0; x < stored_ips.length; x++) {
 				var ip = stored_ips[x];
 				var not = false;
@@ -152,7 +130,7 @@ var validateIP = function(details) {
 				}
 			}
 		}else{
-			alert("BLOCKED: The tool used to get your public ip address is down");
+			alert("BLOCKED: The server used to get your public ip address is down");
 			shouldBlock = true;
 		}
 	}

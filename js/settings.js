@@ -7,7 +7,6 @@ function updateBackground(){
 }
 
 function storeWhitelist(domain_string, ips, manual, callback){
-	console.log("input:"+domain_string);
 	var validInput = true;
 	
 	//valid ip entry
@@ -36,10 +35,8 @@ function storeWhitelist(domain_string, ips, manual, callback){
 			if(url_array == null){
 				url_array = [];
 			}else{
-				console.log("checking domains");
 				for(x=0; x < url_array.length; x++){
 					if(url_array[x] === domain_string){
-						console.log("domain already exists");
 						already_url = true;
 						url_pointer = x;
 						break;
@@ -49,36 +46,40 @@ function storeWhitelist(domain_string, ips, manual, callback){
 			
 			chrome.storage.local.get("allowed_ips", function(allowed_ips_array) {
 				allowed_ips_array = allowed_ips_array.allowed_ips;
-				console.log("get:"+JSON.stringify(allowed_ips_array));
 				if(allowed_ips_array == null){
 					allowed_ips_array = [];
 				}
 				
 				if(!already_url){
-					//store new url
-					url_array[url_array.length] = domain_string;
+					//sort url array so urls come after hosts
+					if(getHostFromURL(domain_string) == domain_string){
+						url_array = url_array.unshift(domain_string);
+					}else{
+						url_array[url_array.length] = domain_string;
+					}
 					chrome.storage.local.set({'urls': url_array}, function(){
 						updateBackground();
 					});
 					url_pointer = x++;
 					allowed_ips_array[allowed_ips_array.length] = ips;
 				}else{
-					var previousIPs = allowed_ips_array[url_pointer];
 					if(!manual){
 						var stored_ips = allowed_ips_array[url_pointer].split(",");
-						//check if ip already exists
+						var input_ips = ips.split(",");
+						
+						//prevent duplicate ip addresses or alternative ones
 						for (var q = 0; q < stored_ips.length; q++){
-							var input_ips = ips.split(",");
 							for (var y = 0; y < input_ips.length; y++){
-								console.log("q: "+stored_ips[q]+" y: "+input_ips[y]);
-								if(input_ips[y].indexOf(stored_ips[q]) != -1){
-									previousIPs = previousIPs.replace(stored_ips[q], "");
+								var i = input_ips[y];
+								var s = stored_ips[q];
+								//i == "!"+s - i is negative version of already stored ip
+								//"!"+i == s - i is non negative version of already stored ip
+								if(i == s || i == "!"+s || "!"+i == s){
+									stored_ips.splice(stored_ips.indexOf(s), 1);
 								}
 							}
 						}
-						ips = previousIPs+","+ips;
-						//remove excess commas
-						ips = ips.replace(/\,{2,}/g,"");
+						ips = stored_ips.concat(input_ips).toString();
 					}
 					
 					allowed_ips_array[url_pointer] = ips;
