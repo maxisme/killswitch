@@ -42,7 +42,7 @@ function setUpOptions(){
 				var html = "";
 				for(var x=0; x < allowed_ips_array.length; x++){
 					var url = url_array[x];
-					var ips = allowed_ips_array[x];
+					var ips = allowed_ips_array[x].replace(/\|/g,'');
 					html += '<p><strong>URL</strong> - <a href="#" url="'+url+'" class="delete">REMOVE RULE</a><br><input class="domain_regex" value="'+url+'"/disabled><br><strong>ALLOWED IPS</strong> seperate with comma<br><textarea class="ips" style="width:100%">'+ips+'</textarea><br></p>';
 				}
 				document.getElementById("content").innerHTML = html;

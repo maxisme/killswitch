@@ -10,7 +10,7 @@ function storeWhitelist(domain_string, ips, manual, callback){
 	var validInput = true;
 	
 	//valid ip entry
-	ips = ips.replace(/ /g,'');
+	ips = ips.replace(/ /g,'').replace(/|/g,'');
 	var ip_array = ips.split(",");
 	for (var i = 0; i < ip_array.length; i++){
 		var ip = ip_array[i];
@@ -46,9 +46,6 @@ function storeWhitelist(domain_string, ips, manual, callback){
 			
 			chrome.storage.local.get("allowed_ips", function(allowed_ips_array) {
 				allowed_ips_array = allowed_ips_array.allowed_ips;
-				if(allowed_ips_array == null){
-					allowed_ips_array = [];
-				}
 				
 				if(!already_url){
 					//sort url array so urls come after hosts
@@ -64,27 +61,29 @@ function storeWhitelist(domain_string, ips, manual, callback){
 				}
 				
 				if(!manual){
-					console.log("not manual");
-					var stored_ips = allowed_ips_array[url_pointer].split(",");
-					var input_ips = ips.split(",");
-					
-					//prevent duplicate ip addresses or alternative ones
-					for (var q = 0; q < stored_ips.length; q++){
-						for (var y = 0; y < input_ips.length; y++){
-							var i = input_ips[y];
-							var s = stored_ips[q];
-							//i == "!"+s - i is negative version of already stored ip
-							//"!"+i == s - i is non negative version of already stored ip
-							if(i == s || i == "!"+s || "!"+i == s){
-								stored_ips.splice(stored_ips.indexOf(s), 1);
+					console.log("not manual"+stored_ips);
+					if(allowed_ips_array[url_pointer] != null){
+						var input_ips = ips.split(",");
+						var stored_ips = allowed_ips_array[url_pointer].split(",");
+						
+						//prevent duplicate ip addresses or alternative ones
+						for (var q = 0; q < stored_ips.length; q++){
+							for (var y = 0; y < input_ips.length; y++){
+								var i = input_ips[y];
+								var s = stored_ips[q];
+								//i == "!"+s - i is negative version of already stored ip
+								//"!"+i == s - i is non negative version of already stored ip
+								if(i == s || i == "!"+s || "!"+i == s){
+									stored_ips.splice(stored_ips.indexOf(s), 1);
+								}
 							}
 						}
+						ips = stored_ips.concat(input_ips);
 					}
-					ips = stored_ips.concat(input_ips);
 				}else{
 					console.log("manual:"+ips+" pnt "+url_pointer);
 				}
-				
+				ips = ips+"|";
 				if(!already_url){
 					allowed_ips_array[allowed_ips_array.length] = ips;
 				}else{
