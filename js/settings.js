@@ -10,7 +10,7 @@ function storeWhitelist(domain_string, ips, manual, callback){
 	var validInput = true;
 	
 	//valid ip entry
-	ips = ips.replace(/ /g,'').replace(/|/g,'');
+	ips = ips.replace(/ /g,'').replace(/\|/g,'');
 	var ip_array = ips.split(",");
 	for (var i = 0; i < ip_array.length; i++){
 		var ip = ip_array[i];
@@ -24,6 +24,8 @@ function storeWhitelist(domain_string, ips, manual, callback){
 			}
 		}
 	}
+	
+	domain_string = domain_string.toLowerCase();
 	
 	if(validInput){
 		var url_pointer = 0;
@@ -49,15 +51,17 @@ function storeWhitelist(domain_string, ips, manual, callback){
 				
 				if(!already_url){
 					//sort url array so urls come after hosts
-					if(getHostFromURL(domain_string) == domain_string){
+					/*if(domain_string.indexOf("http") === -1){
 						url_array = url_array.unshift(domain_string);
-					}else{
-						url_array[url_array.length] = domain_string;
-					}
+						url_pointer = -1;
+					}else{*/
+						url_pointer = x++;
+					//}
+					url_array[url_array.length] = domain_string;
+
 					chrome.storage.local.set({'urls': url_array}, function(){
 						updateBackground();
 					});
-					url_pointer = x++;
 				}
 				
 				if(!manual){
@@ -80,14 +84,21 @@ function storeWhitelist(domain_string, ips, manual, callback){
 						}
 						ips = stored_ips.concat(input_ips);
 					}
-				}else{
-					console.log("manual:"+ips+" pnt "+url_pointer);
 				}
+				
 				ips = ips+"|";
-				if(!already_url){
+				
+				if(already_url){
 					allowed_ips_array[allowed_ips_array.length] = ips;
+				}else if(allowed_ips_array != null){
+					if(url_pointer == -1){
+						allowed_ips_array = allowed_ips_array.splice(0, 0, ips);
+						console.log("SPLICED");
+					}else{
+						allowed_ips_array[url_pointer] = ips;
+					}
 				}else{
-					allowed_ips_array[url_pointer] = ips;
+					allowed_ips_array = [ips];
 				}
 				console.log("final:"+allowed_ips_array);
 			

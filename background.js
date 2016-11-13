@@ -41,7 +41,6 @@ function matchingDomainRegex(access_url, url_regex){
 			url_regex = new RegExp("(http(s?))\:\/\/"+url_regex+"/.*","gi");
 			//blocking host
 			if(url_regex.test(access_url)){
-				alert("is host ->"+ url_regex);
 				matching = true;
 			}
 		}else{
@@ -50,13 +49,11 @@ function matchingDomainRegex(access_url, url_regex){
 				url_regex = url_regex.replace(/\*/g, '.*');
 				url_regex = new RegExp(url_regex, "gi");
 				if(url_regex.test(access_url)){
-					alert("is regex ->"+ access_url);
 					matching = true;
 				}
 			}else{
 				//blocking url
 				if(access_url === url_regex){
-					alert("is url ->"+ access_url);
 					matching = true;
 				}
 			}
@@ -91,6 +88,7 @@ chrome.runtime.onMessage.addListener(
 var validateIP = function(details) {
 	var access_url = details.url;
 	var stored_urls = localStorage.urls.split(",");
+	//alert(stored_urls);
 	var stored_ips = localStorage.allowed_ips;
 	stored_ips = stored_ips.substring(0, stored_ips.length-1).split("|,");
 	
@@ -100,10 +98,10 @@ var validateIP = function(details) {
 	
 	//check if access_url is one stored 
 	for (var i = 0; i < stored_urls.length; i++) {
-		isDomain = matchingDomainRegex(access_url, stored_urls[i]);
-		if(isDomain){
+		var domain_matches = matchingDomainRegex(access_url, stored_urls[i]);
+		if(domain_matches){
+			isDomain = true;
 			stored_ips = stored_ips[i].split(",");
-			break;
 		}
 	}
 	

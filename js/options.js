@@ -32,7 +32,6 @@ function setMessage(string){
 }
 
 function setUpOptions(){
-	//chrome.storage.local.clear(function() {});
 	chrome.storage.local.get("urls", function (url_array) {
 		url_array = url_array.urls;
 		console.log("urls:"+JSON.stringify(url_array));
@@ -40,12 +39,14 @@ function setUpOptions(){
 				allowed_ips_array = allowed_ips_array.allowed_ips;
 				console.log("allowed_ips_array:"+JSON.stringify(allowed_ips_array));
 				var html = "";
-				for(var x=0; x < allowed_ips_array.length; x++){
-					var url = url_array[x];
-					var ips = allowed_ips_array[x].replace(/\|/g,'');
-					html += '<p><strong>URL</strong> - <a href="#" url="'+url+'" class="delete">REMOVE RULE</a><br><input class="domain_regex" value="'+url+'"/disabled><br><strong>ALLOWED IPS</strong> seperate with comma<br><textarea class="ips" style="width:100%">'+ips+'</textarea><br></p>';
+				if(allowed_ips_array != null){
+					for(var x=0; x < allowed_ips_array.length; x++){
+						var url = url_array[x];
+						var ips = allowed_ips_array[x].replace(/\|/g,'');
+						html += '<p><strong>URL</strong> - <a href="#" url="'+url+'" class="delete">REMOVE RULE</a><br><input class="domain_regex" value="'+url+'"/disabled><br><strong>ALLOWED IPS</strong> seperate with comma<br><textarea class="ips" style="width:100%">'+ips+'</textarea><br></p>';
+					}
+					document.getElementById("content").innerHTML = html;
 				}
-				document.getElementById("content").innerHTML = html;
 
 				//set event delete listeners
 				var deleteClasses = document.getElementsByClassName("delete");

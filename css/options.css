@@ -2,6 +2,14 @@
 	font-family: 'Dosis', sans-serif;
 	color:#515151;
 }
+body{
+	overflow: hidden;
+}
+
+#content{
+	overflow-y: scroll;
+	max-height: 400px;
+}
 
 .delete{
 	color:#bc2122;
