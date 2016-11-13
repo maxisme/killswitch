@@ -50,56 +50,51 @@ function storeWhitelist(domain_string, ips, manual, callback){
 				allowed_ips_array = allowed_ips_array.allowed_ips;
 				
 				if(!already_url){
-					//sort url array so urls come after hosts
-					/*if(domain_string.indexOf("http") === -1){
-						url_array = url_array.unshift(domain_string);
-						url_pointer = -1;
-					}else{*/
-						url_pointer = x++;
-					//}
 					url_array[url_array.length] = domain_string;
-
+					url_pointer = x++;
 					chrome.storage.local.set({'urls': url_array}, function(){
 						updateBackground();
 					});
 				}
 				
-				if(!manual){
-					console.log("not manual"+stored_ips);
+				if(allowed_ips_array && !manual){
 					if(allowed_ips_array[url_pointer] != null){
 						var input_ips = ips.split(",");
 						var stored_ips = allowed_ips_array[url_pointer].split(",");
-						
+						console.log("stored_ips: "+stored_ips);
 						//prevent duplicate ip addresses or alternative ones
 						for (var q = 0; q < stored_ips.length; q++){
 							for (var y = 0; y < input_ips.length; y++){
 								var i = input_ips[y];
-								var s = stored_ips[q];
+								var s = stored_ips[q].replace(/\|/g,'');
+								console.log("input ip"+i+" stored:"+s);
 								//i == "!"+s - i is negative version of already stored ip
 								//"!"+i == s - i is non negative version of already stored ip
 								if(i == s || i == "!"+s || "!"+i == s){
+									console.log("before: "+stored_ips);
 									stored_ips.splice(stored_ips.indexOf(s), 1);
+									console.log("after: "+stored_ips);
 								}
 							}
 						}
 						ips = stored_ips.concat(input_ips);
+						console.log("final ips"+ips);
 					}
 				}
 				
 				ips = ips+"|";
-				
-				if(already_url){
-					allowed_ips_array[allowed_ips_array.length] = ips;
-				}else if(allowed_ips_array != null){
-					if(url_pointer == -1){
-						allowed_ips_array = allowed_ips_array.splice(0, 0, ips);
-						console.log("SPLICED");
-					}else{
+				if(url_pointer){
+					allowed_ips_array[url_pointer] = ips;
+				}else if(already_url){
+					if(url_array && allowed_ips_array){
 						allowed_ips_array[url_pointer] = ips;
+					}else{
+						allowed_ips_array = [ips];
 					}
 				}else{
 					allowed_ips_array = [ips];
 				}
+				
 				console.log("final:"+allowed_ips_array);
 			
 				chrome.storage.local.set({'allowed_ips': allowed_ips_array}, function(){

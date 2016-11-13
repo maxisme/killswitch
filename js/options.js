@@ -32,6 +32,7 @@ function setMessage(string){
 }
 
 function setUpOptions(){
+	//chrome.storage.local.clear(function() {});
 	chrome.storage.local.get("urls", function (url_array) {
 		url_array = url_array.urls;
 		console.log("urls:"+JSON.stringify(url_array));
