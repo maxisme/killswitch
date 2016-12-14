@@ -30,7 +30,11 @@ function storeURL(domainOnly, whitelist){
 			alert("BLOCKED: The tool used to get your public ip address is down");
 		}
 	});
-	window.close();
+	
+	setTimeout(function(){
+		window.close();
+	},1000);
+	
 }
 
 function setUpPopup(){

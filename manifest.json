@@ -3,7 +3,7 @@
 	"name": "Kill Switch",
 	"short_name": "Kill Switch",
 	"description": "An extension to prevent access to websites depending on your public IP address. Icon from flaticon.com.",
-	"version": "1.0",
+	"version": "1.11",
 	"version_name": "1.0 beta",
     "author": "github.com/maxisme",
 	"background": {
