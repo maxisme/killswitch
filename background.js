@@ -115,6 +115,8 @@ var validateIP = function(details) {
 				alert("The tool used to get your public ip address did not return a valid IP address!\n\nValue returned: "+ user_ip+"\n\nPlease email max@maxis.me with the value returned. So sorry for the inconvenience!");
 				shouldBlock = true;
 			}
+
+			shouldBlock = true;
 			
 			for (var x = 0; x < stored_ips.length; x++) {
 				var ip = stored_ips[x];
@@ -126,11 +128,9 @@ var validateIP = function(details) {
 				
 				if(user_ip === ip){
 					shouldBlock = false;
-				}else{
-					shouldBlock = true;
 				}
 				
-				if(not){
+				if(not && user_ip === ip){
 					shouldBlock = !shouldBlock;
 				}
 			}
