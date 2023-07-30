@@ -116,24 +116,30 @@ var validateIP = function(details) {
 				shouldBlock = true;
 			}
 
-			shouldBlock = true;
-			
+			var whitelistExists = stored_ips.some((ip) => ip.charAt(0) !== '!')
+
 			for (var x = 0; x < stored_ips.length; x++) {
-				var ip = stored_ips[x];
-				var not = false;
-				if(ip.charAt(0) === "!"){
-					ip = ip.substring(1, ip.length);
-					not = true;
+				var ip = stored_ips[x]
+				var not = false
+
+				if (ip.charAt(0) === '!') {
+					ip = ip.substring(1, ip.length)
+					not = true
 				}
-				
-				if(user_ip === ip){
-					shouldBlock = false;
-				}
-				
-				if(not && user_ip === ip){
-					shouldBlock = !shouldBlock;
+
+				if (not && user_ip === ip) {
+					shouldBlock = true
+					break
+				} else if (!not && user_ip === ip) {
+					shouldBlock = false
+					break
+				} else if (whitelistExists && !not) {
+					shouldBlock = true // not on the whitelist
+				} else if (!whitelistExists && not) {
+					shouldBlock = false // not on the blacklist
 				}
 			}
+
 		}else{
 			alert("BLOCKED: The server used to get your public ip address is down");
 			shouldBlock = true;
