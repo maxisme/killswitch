@@ -8,7 +8,7 @@ function updateBackground(){
 
 function storeWhitelist(domain_string, ips, manual, callback){
 	var validInput = true;
-	
+
 	//valid ip entry
 	ips = ips.replace(/ /g,'').replace(/\|/g,'');
 	var ip_array = ips.split(",");
@@ -24,16 +24,16 @@ function storeWhitelist(domain_string, ips, manual, callback){
 			}
 		}
 	}
-	
+
 	domain_string = domain_string.toLowerCase();
-	
+
 	if(validInput){
 		var url_pointer = 0;
 		var x;
 		chrome.storage.local.get("urls", function (url_array) {
 			url_array = url_array.urls;
 			var already_url = false;
-			
+
 			if(url_array == null){
 				url_array = [];
 			}else{
@@ -45,10 +45,10 @@ function storeWhitelist(domain_string, ips, manual, callback){
 					}
 				}
 			}
-			
+
 			chrome.storage.local.get("allowed_ips", function(allowed_ips_array) {
 				allowed_ips_array = allowed_ips_array.allowed_ips;
-				
+
 				if(!already_url){
 					url_array[url_array.length] = domain_string;
 					url_pointer = x++;
@@ -56,7 +56,7 @@ function storeWhitelist(domain_string, ips, manual, callback){
 						updateBackground();
 					});
 				}
-				
+
 				if(allowed_ips_array && !manual){
 					if(allowed_ips_array[url_pointer] != null){
 						var input_ips = ips.split(",");
@@ -81,7 +81,7 @@ function storeWhitelist(domain_string, ips, manual, callback){
 						console.log("final ips"+ips);
 					}
 				}
-				
+
 				ips = ips+"|";
 				if(url_pointer){
 					allowed_ips_array[url_pointer] = ips;
@@ -94,9 +94,9 @@ function storeWhitelist(domain_string, ips, manual, callback){
 				}else{
 					allowed_ips_array = [ips];
 				}
-				
+
 				console.log("final:"+allowed_ips_array);
-			
+
 				chrome.storage.local.set({'allowed_ips': allowed_ips_array}, function(){
 					updateBackground();
 					if(callback != null){
@@ -129,14 +129,22 @@ function deleteWhitelist(domain_string){
 	});
 }
 
-function isIP(ipaddress)   
-{  
- if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress))  
-  {
-	  return true;
-  }else{
-	  return false;
-  }
+function isIP(ipaddress) {
+    // Handle negation prefix if present
+    let actualIP = ipaddress;
+    if (ipaddress.startsWith('!')) {
+        actualIP = ipaddress.substring(1);
+    }
+
+    // Split IP into octets
+    const octets = actualIP.split('.');
+    if (octets.length !== 4) return false;
+
+    // Check each octet
+    return octets.every(octet => {
+        if (octet === '*') return true;
+        return /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(octet);
+    });
 }
 
 function getHostFromURL(url){

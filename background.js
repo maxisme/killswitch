@@ -11,15 +11,14 @@ function updateLocalStorage(){
 updateLocalStorage();
 
 function getHostFromURL(url){
-    var a = document.createElement('a');
-    a.href = url;
+				var a = document.createElement('a');
+				a.href = url;
 	if(url.indexOf(a.hostname) !== -1){
-    	return a.hostname;
+					return a.hostname;
 	}else{
 		return null;
 	}
 }
-
 
 function setColor(tabID){
 	var LS = localStorage['tabColors'+tabID];
@@ -35,7 +34,7 @@ function setColor(tabID){
 function matchingDomainRegex(access_url, url_regex){
 	var matching = false;
 	if(access_url.length > 0 && url_regex.length > 0){
-		if(url_regex.indexOf("http") === -1 && getHostFromURL("https://"+url_regex) === url_regex){ 
+		if(url_regex.indexOf("http") === -1 && getHostFromURL("https://"+url_regex) === url_regex){
 			/*checking host*/
 			url_regex = url_regex.replace(".","\\.");
 			url_regex = new RegExp("(http(s?))\:\/\/"+url_regex+"/.*","gi");
@@ -62,25 +61,54 @@ function matchingDomainRegex(access_url, url_regex){
 	return matching;
 }
 
-function isIP(ipaddress)   
-{  
- if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress))  
-  {
-	  return true;
-  }else{
-	  return false;	
-  }
+function isIP(ipaddress) {
+				// Handle negation prefix if present
+				let actualIP = ipaddress;
+				if (ipaddress.startsWith('!')) {
+								actualIP = ipaddress.substring(1);
+				}
+
+				// Split IP into octets
+				const octets = actualIP.split('.');
+				if (octets.length !== 4) return false;
+
+				// Check each octet
+				return octets.every(octet => {
+								if (octet === '*') return true;
+								return /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(octet);
+				});
 }
 
-//----RECEIVE MESSAGES FROM UI 
+function ipMatches(pattern, ip) {
+				// Handle negation
+				let actualPattern = pattern;
+				let negate = false;
+				if (pattern.startsWith('!')) {
+								actualPattern = pattern.substring(1);
+								negate = true;
+				}
+
+				// Split both IPs into octets
+				const patternParts = actualPattern.split('.');
+				const ipParts = ip.split('.');
+
+				// Compare each octet
+				const matches = patternParts.every((pattern, index) => {
+								return pattern === '*' || pattern === ipParts[index];
+				});
+
+				return negate ? !matches : matches;
+}
+
+//----RECEIVE MESSAGES FROM UI
 chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
+		function(request, sender, sendResponse) {
 	if (request.type === "update"){
 		updateLocalStorage();
 	}else if(request.type === "refresh"){
 		chrome.tabs.getSelected(null, function(tab) {
-		  var code = 'window.setTimeout(function(){window.location.reload();},500);';
-		  chrome.tabs.executeScript(tab.id, {code: code});
+				var code = 'window.setTimeout(function(){window.location.reload();},500);';
+				chrome.tabs.executeScript(tab.id, {code: code});
 		});
 	}
 });
@@ -88,15 +116,14 @@ chrome.runtime.onMessage.addListener(
 var validateIP = function(details) {
 	var access_url = details.url;
 	var stored_urls = localStorage.urls.split(",");
-	//alert(stored_urls);
 	var stored_ips = localStorage.allowed_ips;
 	stored_ips = stored_ips.substring(0, stored_ips.length-1).split("|,");
-	
+
 	var shouldBlock = false;
 	var isDomain = false;
 	var domainIndex = -1;
-	
-	//check if access_url is one stored 
+
+	//check if access_url is one stored
 	for (var i = 0; i < stored_urls.length; i++) {
 		var domain_matches = matchingDomainRegex(access_url, stored_urls[i]);
 		if(domain_matches){
@@ -104,7 +131,7 @@ var validateIP = function(details) {
 			stored_ips = stored_ips[i].split(",");
 		}
 	}
-	
+
 	if(isDomain){
 		var request = new XMLHttpRequest();
 		request.open('GET', 'https://api.ipify.org', false);
@@ -115,23 +142,12 @@ var validateIP = function(details) {
 				alert("The tool used to get your public ip address did not return a valid IP address!\n\nValue returned: "+ user_ip+"\n\nPlease email max@maxis.me with the value returned. So sorry for the inconvenience!");
 				shouldBlock = true;
 			}
-			
+
+			shouldBlock = true;
 			for (var x = 0; x < stored_ips.length; x++) {
-				var ip = stored_ips[x];
-				var not = false;
-				if(ip.charAt(0) === "!"){
-					ip = ip.substring(1, ip.length);
-					not = true;
-				}
-				
-				if(user_ip === ip){
+				if(ipMatches(stored_ips[x], user_ip)){
 					shouldBlock = false;
-				}else{
-					shouldBlock = true;
-				}
-				
-				if(not){
-					shouldBlock = !shouldBlock;
+					break;
 				}
 			}
 		}else{
@@ -139,9 +155,9 @@ var validateIP = function(details) {
 			shouldBlock = true;
 		}
 	}
-	
+
 	var this_tab_id = localStorage.current_tab_id;
-	
+
 	if(shouldBlock){
 		localStorage.setItem('tabColors'+this_tab_id, "red");
 	}else{
