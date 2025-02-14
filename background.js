@@ -115,25 +115,31 @@ var validateIP = function(details) {
 				alert("The tool used to get your public ip address did not return a valid IP address!\n\nValue returned: "+ user_ip+"\n\nPlease email max@maxis.me with the value returned. So sorry for the inconvenience!");
 				shouldBlock = true;
 			}
-			
+
+			var whitelistExists = stored_ips.some((ip) => ip.charAt(0) !== '!')
+
 			for (var x = 0; x < stored_ips.length; x++) {
-				var ip = stored_ips[x];
-				var not = false;
-				if(ip.charAt(0) === "!"){
-					ip = ip.substring(1, ip.length);
-					not = true;
+				var ip = stored_ips[x]
+				var not = false
+
+				if (ip.charAt(0) === '!') {
+					ip = ip.substring(1, ip.length)
+					not = true
 				}
-				
-				if(user_ip === ip){
-					shouldBlock = false;
-				}else{
-					shouldBlock = true;
-				}
-				
-				if(not){
-					shouldBlock = !shouldBlock;
+
+				if (not && user_ip === ip) {
+					shouldBlock = true
+					break
+				} else if (!not && user_ip === ip) {
+					shouldBlock = false
+					break
+				} else if (whitelistExists && !not) {
+					shouldBlock = true // not on the whitelist
+				} else if (!whitelistExists && not) {
+					shouldBlock = false // not on the blacklist
 				}
 			}
+
 		}else{
 			alert("BLOCKED: The server used to get your public ip address is down");
 			shouldBlock = true;
